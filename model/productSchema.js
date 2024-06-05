@@ -1,12 +1,6 @@
 const mongoose = require('mongoose')
 
 const productSchema = new mongoose.Schema({
-   // owner: {
-   //    type: objectID,
-   //    required: true,
-   //    ref: 'Admin'
-   // },
-
    productName: {
       type: String,
       required: true,
@@ -66,15 +60,6 @@ const productSchema = new mongoose.Schema({
       default: 0,
    },
    afterDiscount:Number,
-
-   
-   
-   // subcategory: [{
-   //    type: mongoose.Schema.Types.ObjectId,
-   //    ref: 'Subcategory',
-   //    // required: true
-   // }],
-   
 }, {
    timestamps: true
 })

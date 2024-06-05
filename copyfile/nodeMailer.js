@@ -16,24 +16,23 @@ function sentOtp(email) {
     charset: 'numeric',
   });
 
-  // const mailOptions = {
-  //   from: process.env.USER_EMAIL,
-  //   to: email,
-  //   subject: 'Your OTP Code for verification',
-  //   text: `Your OTP code is: ${otp}`,
-  // };
+  const mailOptions = {
+    from: process.env.USER_EMAIL,
+    to: email,
+    subject: 'Your OTP Code for verification',
+    text: `Your OTP code is: ${otp}`,
+  };
 
-  // transporter.sendMail(mailOptions, (error, info) => {
-  //   if (error) {
-  //     console.error('Error sending email:', error);
-  //     res.status(500).send('Error sending OTP');
-  //   } else {
-  //     console.log('Email sent:', info.response);
-  //     console.log('OTP:', otp);
-  //   }
-  // });
-  console.log('email:', email);
-  console.log('OTP:', otp);
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+      res.status(500).send('Error sending OTP');
+    } else {
+      console.log('Email sent:', info.response);
+      console.log('OTP:', otp);
+    }
+  });
+  
   return otp;
 }
 

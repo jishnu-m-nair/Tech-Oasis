@@ -5,7 +5,7 @@
 <!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-account-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:33 GMT -->
 <head>
     <meta charset="utf-8">
-    <title>Evara Dashboard</title>
+    <title>TechOasis Admin Login</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,33 +15,42 @@
     <meta property="og:image" content="">
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
     <!-- Template CSS -->
     <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+        .password-input {
+            position: relative;
+        }
+        
+        .password-toggle-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
     <main>
         <header class="main-header style-2 navbar">
             <div class="col-brand">
-                <a href="index.html" class="brand-wrap">
+                <a href="/dashboard" class="brand-wrap">
                     <img src="/assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
                 </a>
             </div>
             <div class="col-nav">
                 <ul class="nav">
                     <li class="nav-item">
-                        <a class="nav-link btn-icon" href="#">
-                            <i class="material-icons md-notifications animation-shake"></i>
-                            <span class="badge rounded-pill">3</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
                     </li>
-                    <li class="dropdown nav-item">
+                    <!-- <li class="dropdown nav-item">
                         <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
                             <a class="dropdown-item text-brand" href="#"><img src="/assets/imgs/theme/flag-us.png" alt="English">English</a>
@@ -61,7 +70,7 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
                         </div>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
         </header>
@@ -69,14 +78,22 @@
             <div class="card mx-auto card-login">
                 <div class="card-body">
                     <h4 class="card-title mb-4">Sign in</h4>
-                    <form action="/admin/login" method="POST">
+                    <form id="adminSignInForm" action="/admin/login" method="POST">
                         <div class="mb-3">
                             <label for="adminEmail">Email</label>
-                            <input class="form-control" placeholder="Email" type="text" name="adminEmail" id="adminEmail">
+                            <input class="form-control" placeholder="Email" type="text" name="adminEmail" id="adminEmail" maxlength="30">
+                            <span id="emailError" style="color: red;"></span>
                         </div> <!-- form-group// -->
                         <div class="mb-3">
                             <label for="adminPassword">Password</label>
-                            <input class="form-control" placeholder="Password" type="password" name="adminPassword" id="adminPassword">
+                            <div class="password-input">
+                                <input class="form-control" type="password" placeholder="Password" name="adminPassword" id="adminPassword" maxlength="10" required>
+                                <span class="password-toggle-button" onclick="togglePasswordVisibility(this)">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                            <span id="passwordError" style="color: red;"></span>
+                            
                         </div> <!-- form-group// -->
                         <!-- <div class="mb-3">
                             <a href="#" class="float-end font-sm text-muted">Forgot password?</a>
@@ -86,7 +103,7 @@
                             </label>
                         </div> form-group form-check .// -->
                         <div class="mb-4">
-                            <button type="submit" class="btn btn-primary w-100"> Login </button>
+                            <button id="submitBtn" type="submit" class="btn btn-primary w-100"> Login </button>
                         </div> <!-- form-group// -->
                     </form>
                     
@@ -97,11 +114,73 @@
             <p class="font-xs">
                 <script>
                 document.write(new Date().getFullYear())
-                </script> ©, Evara - HTML Ecommerce Template .
+                </script> © <a href="/dashboard">Techoasis</a>
             </p>
             <p class="font-xs mb-30">All rights reserved</p>
         </footer>
     </main>
+
+    <script>
+        const form = document.getElementById('adminSignInForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        const adminEmail = document.getElementById('adminEmail');
+        const adminPassword = document.getElementById('adminPassword');
+
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+
+        form.addEventListener('input', validateForm);
+        form.addEventListener('blur', validateForm, true);
+        form.addEventListener('change', validateForm, true);
+
+        function validateForm() {
+            let isValid = true;
+
+            // Email validation
+            const emailValue = adminEmail.value.trim();
+            if (!emailValue) {
+                emailError.textContent = 'Email cannot be empty';
+                adminEmail.style.borderColor = 'red';
+                isValid = false;
+            } else {
+                emailError.textContent = '';
+                adminEmail.style.borderColor = 'green';
+            }
+
+            // Password validation
+            const passwordValue = adminPassword.value.trim();
+            if (!passwordValue) {
+                passwordError.textContent = 'Password cannot be empty';
+                adminPassword.style.borderColor = 'red';
+                isValid = false;
+            } else {
+                passwordError.textContent = '';
+                adminPassword.style.borderColor = 'green';
+            }
+
+            // Enable or disable submit button
+            submitBtn.disabled = !isValid;
+        }
+
+        form.addEventListener('submit', function(event) {
+            if (submitBtn.disabled) {
+                event.preventDefault();
+            }
+        });
+
+        function togglePasswordVisibility(button) {
+            const passwordInput = button.parentElement.querySelector('input[name="adminPassword"]');
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                button.innerHTML = '<i class="fas fa-eye-slash"></i>'; // Show the "eye-slash" icon
+            } else {
+                passwordInput.type = "password";
+                button.innerHTML = '<i class="fas fa-eye"></i>'; // Show the "eye" icon
+            }
+        }
+    </script>
+
     <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>

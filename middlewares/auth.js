@@ -29,6 +29,10 @@ const logSession = (req,res,next)=>{
    
   
   };
+
+  const isBlockedUser = (req,res,next) => {
+
+  }
  
  module.exports = {
     logSession,

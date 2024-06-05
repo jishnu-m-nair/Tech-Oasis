@@ -1,7 +1,7 @@
 // const ProductModel = require("../model/productSchema");
 const UserModel = require("../model/userSchema");
 const AdminModel = require("../model/adminSchema");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 // const fs = require('fs');
 
 // dashboard

@@ -1,8 +1,6 @@
 node_modules
-toast
 .env
 .vscode
-hash.js
-index.js
 config.env
-uploadss
+non-used-files
+check.txt

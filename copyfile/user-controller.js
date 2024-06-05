@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
-const randomString = require('randomstring');
+
 const UserModel = require("../model/userSchema");
 const ProductModel = require("../model/productSchema");
 const categoryModel = require("../model/categorySchema");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 const { validationResult } = require('express-validator');
 const validator = require('validator');
@@ -14,7 +14,6 @@ const { sentOtp , transporter } = require('../config/nodeMailer');
 // function otpNull(req, res, next) {
 //   expire = setTimeout(() => {
 //     req.session.otp = null;
-//     req.session.otpExpired = true;
 //   },1000 * 10);
 // }
 // 1000 * 60 * 3
@@ -228,6 +227,11 @@ const postRegister = async (req, res, next) => {
       } else if (existingUser.email === email) {
         req.flash("error", "Email is already registered");
       }
+      // req.body in string so have to convert existing data to string
+      //  else if(existingUser.phone+"" === phone+"") {
+      // else if (existingUser.phone == phone) {
+      //   req.flash("error", "Phone number is already registered");
+      // }
 
       req.session.data = req.body;
       return res.redirect("/signup");
@@ -246,7 +250,7 @@ const postRegister = async (req, res, next) => {
       req.session.emailSignup = email;
       // res.redirect('/testing')
       req.session.otp = sentOtp(email);
-      otpNull(req);
+      otpNull(req, res);
       
       res.redirect("/otp");
     }
@@ -257,49 +261,55 @@ const postRegister = async (req, res, next) => {
 };
 
 
-let expireOTP;
+let expire;
 
 function otpNull(req, res, next) {
-  clearTimeout(expireOTP)
-  expireOTP = setTimeout(() => {
+  setTimeout(() => {
     req.session.otp = null;
     req.session.otpExpired = true; // Set OTP expiration flag
-    console.log("OTP expired!"); // Add logging for debugging
   }, 10000); // 10 seconds in milliseconds
 }
-
 
 let postVerifyOtp = async (req, res, next) => {
   try {
     const { otp } = req.body;
-
-    if (req.session.otp !== null && !req.session.otpExpired) {
+    console.log('..........',req.session.otp);
+    
+    if (req.session.otp !== null) {
       if (!isNaN(otp)) {
         if (otp === req.session.otp) {
+          
+          // Update isVerified to true
           req.session.userDetails.isVerified = true;
-          // const newUser = new UserModel(req.session.userDetails);
-          // await newUser.save();
-          console.log("user saved");
+          
+          // Create a new user document and save it to the database
+          const newUser = new UserModel(req.session.userDetails);
+          await newUser.save();
+          
+          console.log(newUser);
+          
+          // Set user session and redirect to login
           req.session.user = req.session.userDetails.email;
           return res.redirect("/login");
         } else {
+          // Incorrect OTP, redirect back to OTP entry page
           req.session.otpFalse = true;
           return res.redirect("/otp");
         }
       }
-    } else{
-      req.session.otpExpired = true;
-    return res.redirect("/otp?expired=true");
     }
-
+    
+    // OTP is null or not a number
+    // Set OTP expired flag and redirect back to OTP entry page with a custom message
+    req.session.otpExpired = true;
+    return res.redirect("/otp?expired=true");
     
   } catch (e) {
+    // Handle any errors
     console.error(e);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-
-
 
 
 let loadOTP = async (req, res) => {
@@ -324,47 +334,20 @@ let loadOTP = async (req, res) => {
   }
 };
 
-// let resendOtp = async (req, res) => {
-//   // Clear the existing timeout
-//   clearTimeout(expire);
+let resendOtp = async (req, res) => {
+  // Clear the existing timeout
+  clearTimeout(expire);
   
-//   // Reset OTP and start a new timeout
-//   req.session.otp = sentOtp(req.session.emailSignup);
-//   otpNull(req, res);
+  // Reset OTP and start a new timeout
+  req.session.otp = sentOtp(req.session.emailSignup);
+  otpNull(req, res);
   
-//   res.status(200).json({
-//     status: true
-//   });
-// };
-
-// Controller method to handle OTP resending
-// const resendOtp = async (req, res) => {
-//   clearTimeout(expire);
-
-//   const email = req.session.emailSignup;
-//   if (!email) {
-//     return res.render('otp', { err: 'Email not found. Please login again.' });
-//   }
-
-//   req.session.otp = sentOtp(email);
-//   otpNull(req);
-
-//   res.status(200).json({ status: true });
-// };
-
-const resendOtp = async (req, res) => {
-  clearTimeout(expireOTP);
-
-  const email = req.session.emailSignup;
-  if (!email) {
-    return res.status(400).json({ status: false, message: 'Email not found. Please login again.' });
-  }
-
-  req.session.otp = sentOtp(email);
-  otpNull(req);
-
-  return res.status(200).json({ status: true, message: 'OTP has been resent successfully!' });
+  res.status(200).json({
+    status: true
+  });
 };
+
+
 
 
 module.exports = {

@@ -3,10 +3,9 @@ const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
    //signup format//
-   username: {
+   fullname: {
       type: String,
-      required: true,
-      unique: true
+      required: true
    },
    email: {
       type: String,
@@ -16,20 +15,18 @@ const userSchema = new mongoose.Schema({
    },
    phone: {
       type: Number,
-      required: true,
       unique: true,
+      sparse: true
    },
    password: {
+      type: String
+   },
+   // google signin
+   googleId: {
       type: String,
-      required: true,
-      minlength: 6
    },
 
    //profile format//
-   fullname: {
-      type: String,
-      required: true
-   },
 
    address: {
       street: String,
@@ -44,13 +41,6 @@ const userSchema = new mongoose.Schema({
    pincodeOrZip: {
       type: Number,
    },
-   orderNotes: {
-      type: String
-   },
-   wallet: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Wallet', // Reference to the 'Wallet' model
-  },
 
    //Timestamps//
    createdAt: {
@@ -62,10 +52,7 @@ const userSchema = new mongoose.Schema({
       default: Date.now,
    },
 
-   isActive: {
-      type: Boolean,
-      default: true,
-   },
+
    isVerified: {
       type: Boolean,
       default: false
@@ -80,15 +67,6 @@ const userSchema = new mongoose.Schema({
   }
 
 });
-
-//Hash plain password before saving
-// userSchema.pre('save', async function (next) {
-//    const user = this;
-//    if (user.isModified('password')) {
-//       user.password = await bcrypt.hash(user.password, 10)
-//    }
-//    next();
-// })
 
 
 const UserModel = mongoose.model('users', userSchema)

@@ -15,9 +15,9 @@ router.get('/admin',(req,res) => {
     res.render('admin-index')
 })
 
-router.get('/admin/signup',(req,res)=> {
-    res.render('admin-register')
-})
+// router.get('/admin/signup',(req,res)=> {
+//     res.render('admin-register')
+// })
 router.post('/admin/signup',admin.postAdminRegister)
 
 //admin login
